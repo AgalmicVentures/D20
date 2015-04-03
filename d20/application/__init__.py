@@ -1,13 +1,14 @@
 
 import cherrypy
 import io
-import qrcode
-import qrcode.constants
-import qrcode.image.svg
+
+import application.json_application
 
 class D20Application:
 
 	def __init__(self):
+		self.json = json_application.D20JsonApplication()
+
 		with io.open('./templates/index.html') as indexTemplateFile:
 			self.indexTemplate = indexTemplateFile.read()
 
