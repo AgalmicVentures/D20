@@ -21,7 +21,6 @@ class D20JsonApplication:
 			'error': 'API not found',
 		})
 
-	#TODO: challenge-response
 	@cherrypy.expose
 	def entropy(self, challenge='', **kwargs):
 		if challenge == '':
