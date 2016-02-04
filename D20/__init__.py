@@ -3,7 +3,7 @@
 import cherrypy
 import sys
 
-import application
+import Application
 
 def main():
 	print('Starting up D20...')
@@ -13,7 +13,7 @@ def main():
 		'server.socket_port': 27184,
 	})
 
-	d20 = application.D20Application()
+	d20 = Application.D20Application()
 	cherrypy.quickstart(d20)
 
 	print('Shutting down D20...')
