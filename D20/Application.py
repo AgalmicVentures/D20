@@ -40,7 +40,7 @@ class D20JsonApplication:
 	def entropy(self, challenge='', **kwargs):
 		if challenge == '':
 			return jsonResponse({
-				'error': 'No challenge provided',
+				'error': "No 'challenge' parameter provided (e.g. challenge=123)",
 			})
 
 		h = hashlib.sha512()
