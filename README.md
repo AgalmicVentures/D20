@@ -14,7 +14,7 @@ Random bytes read from `/dev/urandom`.
 Yes. As long as you trust the crypto primitives you rely on the rest of the time. This is well covered here: http://www.2uo.de/myths-about-urandom/
 
 ### How can I trust this service?
-You don't have. Use it as one source of many, even other instances of D20 controlled by other parties. As long as at least one instance is not compromised, your pool will get seeded.
+You don't have to. Use it as one source of many, even other instances of D20 controlled by other parties. As long as at least one instance is not compromised, your pool will get seeded.
 
 Also, run your own copy! It's open source and deliberately short so you can verify (and modify) the code yourself.
 
