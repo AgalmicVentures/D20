@@ -17,7 +17,13 @@ class D20Application:
 
 	@cherrypy.expose
 	def default(self, *args, **kwargs):
-		return '<html><body><h1>D20 - Page Not Found</h1></body></html>'
+		return ''.join([
+			'<html><body>',
+			'<h1>D20 - Page Not Found</h1>',
+			'<p>The only endpoint available on this entropy micro-service is <a href="/json/entropy">/json/entropy</a>.</p>',
+			'<p>For more information including the complete source code, visit <a href="https://github.com/AgalmicVentures/D20">the D20 repository</a>.</p>',
+			'</body></html>',
+		])
 
 class D20JsonApplication:
 
