@@ -3,7 +3,7 @@ D20 is an entropy microservice in Python 3 built on CherryPy. As a network sourc
 
 It offers entropy-as-a-service, comparable to Pollen (https://github.com/dustinkirkland/pollen), but with several key differences. Superficially, D20 has a different algorithm to generate entropy and is written in Python rather than Go. However, the most important difference is the license: D20 has a far more permissive license than Pollen (MIT versus Affero GPL). This ensures you can modify and use it as you need, without worrying about licensing issues.
 
-For an open instance, go to https://www.agalmicventures.com:8443/json/entropy.
+For an open instance, go to https://www.agalmicventures.com:8443/api/entropy.
 
 ## FAQ
 

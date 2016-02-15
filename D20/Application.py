@@ -13,19 +13,19 @@ def jsonResponse(value):
 class D20Application:
 
 	def __init__(self):
-		self.json = D20JsonApplication()
+		self.api = D20ApiApplication()
 
 	@cherrypy.expose
 	def default(self, *args, **kwargs):
 		return ''.join([
 			'<html><body>',
 			'<h1>D20 - Page Not Found</h1>',
-			'<p>The only endpoint available on this entropy micro-service is <a href="/json/entropy">/json/entropy</a>.</p>',
+			'<p>The only endpoint available on this entropy micro-service is <a href="/api/entropy">/api/entropy</a>.</p>',
 			'<p>For more information including the complete source code, visit <a href="https://github.com/AgalmicVentures/D20">the D20 repository</a>.</p>',
 			'</body></html>',
 		])
 
-class D20JsonApplication:
+class D20ApiApplication:
 
 	def __init__(self):
 		self.urandom = io.open('/dev/urandom', 'rb')
@@ -40,7 +40,7 @@ class D20JsonApplication:
 	def entropy(self, challenge='', **kwargs):
 		if challenge == '':
 			return jsonResponse({
-				'error': "No 'challenge' parameter provided (e.g. /json/entropy?challenge=123)",
+				'error': "No 'challenge' parameter provided (e.g. /api/entropy?challenge=123)",
 			})
 
 		h = hashlib.sha512()
