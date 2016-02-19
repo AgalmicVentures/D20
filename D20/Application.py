@@ -1,7 +1,7 @@
 
 import binascii
 import cherrypy
-from datetime import datetime
+import datetime
 import hashlib
 import io
 import json
@@ -52,8 +52,9 @@ class D20ApiApplication:
 		h.update(entropy[8:-8])
 		entropyValue = binascii.hexlify(h.digest()).decode('utf8')
 
-		now = datetime.now()
-		nowStr = now.strftime('%Y-%m-%d %H:%M:%S')
+		now = datetime.datetime.now()
+		iso8601Foramt = '%Y-%m-%dT%H:%M:%S'
+		nowStr = now.strftime(iso8601Foramt)
 
 		return jsonResponse({
 			'challengeResponse': challengeResponse,
