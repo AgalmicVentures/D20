@@ -3,7 +3,7 @@ D20 is an entropy microservice and client. As a network source of entropy, it is
 
 The D20 server offers a service comparable to Pollen (https://github.com/dustinkirkland/pollen), but with several key differences. Superficially, D20 has a different algorithm to generate entropy and is written in Python rather than Go. However, the most important difference is the license: D20 has a far more permissive license than Pollen (MIT versus Affero GPL). This ensures you can modify and use it as you need, without worrying about licensing issues.
 
-The D20 client (`roll.sh`) has similar differences with the Pollen client, Pollinate (https://github.com/dustinkirkland/pollinate). Again, the license is less restrictive (MIT versus GPL), to ensure, for example, that there will be no issues building a client into a product. Additionally, it does not send any unnecessary identifying information to the server, such as OS and CPU.
+The D20 client (`roll.sh`) has similar differences with the Pollen client, Pollinate (https://github.com/dustinkirkland/pollinate). Again, the license is less restrictive (MIT versus GPL). Also, it does not send any unnecessary identifying information (such as OS and CPU) to the server.
 
 For an open D20 server, go to https://www.agalmicventures.com:8443/api/entropy.
 
@@ -15,22 +15,25 @@ Random bytes read from `/dev/urandom`.
 ### Is `/dev/urandom` really secure? Don't you want to use `/dev/random`?
 Yes. As long as you trust the crypto primitives you rely on the rest of the time. This is well covered here: http://www.2uo.de/myths-about-urandom/.
 
-### How can I trust this service?
-You don't have to. Use it as one source of many, even other instances of D20 controlled by other parties. As long as at least one instance is not compromised, your pool will get seeded.
+### How can I trust the server?
+You don't have to. The client accepts a list of servers to use. As long as at least one instance is not compromised, your pool will get seeded securely.
 
-Also, run your own copy! It's open source and deliberately short so you can verify (and modify) the code yourself.
+Also, run your own server! The code is open source and short so you can verify it yourself.
 
 ### Challenge-response?
-Yes. To prove that the server did some work and generated a unique response for your request.
+Although it can't prove the server gave you good entropy, it does prove that the server did some work and generated a unique response for your request. It also acts as a check that the client queried a valid D20 server.
+
+### How does `roll.sh` generate its challenges?
+It uses SHA512 sum of the date with nanosecond precision (`date +%Y%m%d%H%M%S%N`).
 
 ## API
 
 ### `/api/entropy`
 Requires a single argument `challenge`. Returns a JSON blob containing 3 keys:
 
-* `time`: the server time to the second (to prevent releasing fine-grained timing information)
-* `challengeResponse`: the SHA512 sum of the `challenge`
-* `entropy`: the SHA512 sum of the challenge and 64 bytes drawn from `/dev/urandom`
+* `time`: the server time to the second (to prevent releasing fine-grained timing information) in ISO 8601 format (%Y-%m-%dT%H:%M:%S)
+* `challengeResponse`: the SHA512 sum of the `challenge` as a lower case hexadecimal string
+* `entropy`: the SHA512 sum of the challenge and 64 bytes drawn from `/dev/urandom` as a lower case hexadecimal string
 
 ## Scripts
 
