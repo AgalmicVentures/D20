@@ -53,8 +53,8 @@ class D20ApiApplication:
 		entropyValue = binascii.hexlify(h.digest()).decode('utf8')
 
 		now = datetime.datetime.now()
-		iso8601Foramt = '%Y-%m-%dT%H:%M:%S'
-		nowStr = now.strftime(iso8601Foramt)
+		iso8601Format = '%Y-%m-%dT%H:%M:%S'
+		nowStr = now.strftime(iso8601Format)
 
 		return jsonResponse({
 			'challengeResponse': challengeResponse,
