@@ -26,6 +26,12 @@ Although it can't prove the server gave you good entropy, it does prove that the
 ### How does `roll.sh` generate its challenges?
 It uses SHA512 sum of the date with nanosecond precision (`date +%Y%m%d%H%M%S%N`).
 
+### How do I automate this?
+You can reseed automatically once each day by adding the following to your crontab (`crontab -e`):
+
+    #Set MM and HH to minute and hour of your choice.
+    MM HH * * * cd path/to/D20/ && ./roll.sh
+
 ## API
 
 ### `/api/entropy`
@@ -41,4 +47,4 @@ Requires a single argument `challenge`. Returns a JSON blob containing 3 keys:
 These scripts will start, stop, and restart a background instance of D20 using `server.conf` as the configuration.
 
 ### `roll.sh`
-Seeds your local entropy pool by individually seeding from a group of D20 instances specified as arguments: `./roll.sh https://agalmicventures.com:8443`.
+Seeds your local entropy pool by individually seeding from a group of D20 instances specified as arguments: `./roll.sh https://d20.example.com`. If no arguments are specified, https://www.agalmicventures.com:8443 is used by default.
