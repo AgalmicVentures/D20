@@ -12,8 +12,8 @@ def jsonResponse(value):
 
 class D20Application:
 
-	def __init__(self):
-		self.api = D20ApiApplication()
+	def __init__(self, seedEntropy=False):
+		self.api = D20ApiApplication(seedEntropy=seedEntropy)
 
 	@cherrypy.expose
 	def default(self, *args, **kwargs):
@@ -27,8 +27,11 @@ class D20Application:
 
 class D20ApiApplication:
 
-	def __init__(self):
-		self.urandom = io.open('/dev/urandom', 'rb')
+	def __init__(self, seedEntropy=False):
+		self._seedEntropy = seedEntropy
+		self._urandom = io.open('/dev/urandom', 'rb')
+		if seedEntropy:
+			self._urandom_w = io.open('/dev/urandom', 'wb')
 
 	@cherrypy.expose
 	def default(self, *args, **kwargs):
@@ -45,16 +48,22 @@ class D20ApiApplication:
 
 		h = hashlib.sha512()
 		h.update(challenge.encode('utf8', 'ignore'))
-		challengeResponse = binascii.hexlify(h.digest()).decode('utf8')
+		challengeResponseBytes = binascii.hexlify(h.digest())
+		challengeResponse = challengeResponseBytes.decode('utf8')
 
 		#Get entropy from /dev/urandom
-		entropy = self.urandom.read(128)
+		entropy = self._urandom.read(128)
 		h.update(entropy)
 		entropyValue = binascii.hexlify(h.digest()).decode('utf8')
 
 		now = datetime.datetime.now()
 		iso8601Format = '%Y-%m-%dT%H:%M:%S'
 		nowStr = now.strftime(iso8601Format)
+
+		#Reseed the entropy pool if necessary
+		if self._seedEntropy:
+			self._urandom_w.write(challengeResponseBytes)
+			self._urandom_w.write(now.strftime('%S.%f').encode('utf8'))
 
 		return jsonResponse({
 			'challengeResponse': challengeResponse,
