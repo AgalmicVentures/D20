@@ -47,9 +47,9 @@ class D20ApiApplication:
 		h.update(challenge.encode('utf8', 'ignore'))
 		challengeResponse = binascii.hexlify(h.digest()).decode('utf8')
 
-		#Get entropy, throwing away the first and last 8 bytes
-		entropy = self.urandom.read(80)
-		h.update(entropy[8:-8])
+		#Get entropy from /dev/urandom
+		entropy = self.urandom.read(128)
+		h.update(entropy)
 		entropyValue = binascii.hexlify(h.digest()).decode('utf8')
 
 		now = datetime.datetime.now()
