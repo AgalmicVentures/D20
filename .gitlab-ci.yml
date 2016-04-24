@@ -1,0 +1,23 @@
+
+before_script:
+
+stages:
+  - test
+  - stop
+
+test_job:
+  stage: test
+  script:
+    - ./start.sh
+    - sleep 5
+    - ./stop.sh
+  only:
+    - master
+
+stop:
+  stage: stop
+  script:
+    - ./stop.sh
+  only:
+    - master
+  when: always
