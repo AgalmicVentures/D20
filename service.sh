@@ -24,7 +24,7 @@ function start {
 
 	echo "Starting..."
 	nohup $PROCESS &
-	sleep 1
+	sleep 10
 
 	PROCESSES=$(get_processes)
 	if [[ $? -eq 0 ]]; then
@@ -41,8 +41,8 @@ function start {
 function stop {
 	PROCESSES=$(get_processes)
 	if [[ $? -eq 1 ]]; then
-	echo "Not running"
-	exit
+		echo "Not running"
+		exit
 	fi
 
 	PID=`echo $PROCESSES | awk '{print $1}'`
