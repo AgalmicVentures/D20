@@ -9,7 +9,6 @@ test_job:
   stage: test
   script:
     - ./start.sh
-    - sleep 5
     - ./stop.sh
   only:
     - master
