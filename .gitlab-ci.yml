@@ -19,4 +19,5 @@ stop:
     - ./stop.sh
   only:
     - master
-  when: always
+  when: on_failure
+
