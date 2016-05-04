@@ -42,9 +42,25 @@ function stop {
 	PROCESSES=$(get_processes)
 	if [[ $? -eq 1 ]]; then
 		echo "Not running"
-		exit
+		return 0
 	fi
 
-	PID=`echo $PROCESSES | awk '{print $1}'`
-	kill $@ $PID
+	for N in 0 1 2 3 4; do
+		PID=`echo $PROCESSES | awk '{print $1}'`
+		echo "Stopping PID $PID"
+		kill $@ $PID
+		sleep 1
+
+		PROCESSES=$(get_processes)
+		if [[ $? -eq 1 ]]; then
+			echo "Stopped."
+			return 0
+		fi
+		sleep 1
+	done
+
+	#If it's still alive, it's not responding to normal signals, so kill it
+	echo "Killing PID $PID"
+	kill -9 $PID
+	sleep 1
 }
