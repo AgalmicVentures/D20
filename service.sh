@@ -24,7 +24,18 @@ function start {
 
 	echo "Starting..."
 	nohup $PROCESS &
-	sleep 10
+
+	for N in 0 1 2 3 4 5 6 7 8 9; do
+		PROCESSES=$(get_processes)
+		if [[ $? -ne 0 ]]; then
+			echo "Startup failed:"
+			echo
+			tail -n20 nohup.out
+			return 1
+		fi
+
+		sleep 1
+	done
 
 	PROCESSES=$(get_processes)
 	if [[ $? -eq 0 ]]; then
