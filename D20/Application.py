@@ -10,7 +10,7 @@ def jsonResponse(value):
 	cherrypy.response.headers['Content-Type'] = 'application/json'
 	return json.dumps(value, indent=4, sort_keys=True).encode('utf8')
 
-class D20Application:
+class D20Application(object):
 
 	def __init__(self, seedEntropy=False):
 		self.api = D20ApiApplication(seedEntropy=seedEntropy)
@@ -25,7 +25,7 @@ class D20Application:
 			'</body></html>',
 		])
 
-class D20ApiApplication:
+class D20ApiApplication(object):
 
 	def __init__(self, seedEntropy=False):
 		self._seedEntropy = seedEntropy
