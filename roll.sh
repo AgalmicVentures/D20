@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -u
+
 START_WAIT_MAX=10
 STEP_WAIT_MAX=1
 
