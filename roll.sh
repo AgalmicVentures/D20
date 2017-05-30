@@ -22,14 +22,14 @@
 
 set -u
 
-START_WAIT_MAX=10
-STEP_WAIT_MAX=1
+readonly START_WAIT_MAX=10
+readonly STEP_WAIT_MAX=1
 
 #Get the server pool
 if [[ $# -gt 0 ]]
 then
 	echo "Seeding local entropy pool from $# servers"
-	SERVERS=$@
+	SERVERS="$*"
 else
 	echo "Seeding local entropy pool from default server"
 	SERVERS=https://agalmicventures.com:8443
@@ -51,22 +51,23 @@ do
 	echo "Getting entropy from $SERVER ..."
 
 	#Calculate the hash of the highest resolution time available as a challenge (%N is nanos for GNU date)a
-	START_TIME=`date +%Y%m%d%H%M%S%N`
-	CHALLENGE=`echo $START_TIME | $SHA512 | cut -d' ' -f1`
-	EXPECTED_CHALLENGE_RESPONSE=`echo -n $CHALLENGE | $SHA512 | cut -d' ' -f1`
+	START_TIME=$(date +%Y%m%d%H%M%S%N)
+	CHALLENGE=$(echo "$START_TIME" | $SHA512 | cut -d' ' -f1)
+	EXPECTED_CHALLENGE_RESPONSE=$(echo -n "$CHALLENGE" | $SHA512 | cut -d' ' -f1)
 
 	#Query the server and check the challenge response
 	RESPONSE=$(curl -s "$SERVER/api/entropy?challenge=$CHALLENGE")
-	CHALLENGE_RESPONSE=$(echo $RESPONSE | egrep -o '"challengeResponse": "[0-9a-f]+' | cut -d'"' -f4)
+	CHALLENGE_RESPONSE=$(echo "$RESPONSE" | grep -Eo '"challengeResponse": "[0-9a-f]+' | cut -d'"' -f4)
 	if [ "$CHALLENGE_RESPONSE" = "$EXPECTED_CHALLENGE_RESPONSE" ]
 	then
 		#Pass through sha512sum to complicate writing a malicious server
-		echo $RESPONSE | $SHA512 > /dev/urandom
+		echo "$RESPONSE" | $SHA512 > /dev/urandom
 		echo "Success."
 	else
 		echo "Invalid challenge response (got $CHALLENGE_RESPONSE, expected $EXPECTED_CHALLENGE_RESPONSE)"
 	fi
 
+	#Random wait in between
 	python3 -c "import random, time; time.sleep($STEP_WAIT_MAX * random.random())"
 done
 
