@@ -33,7 +33,7 @@ least one instance is not compromised, your pool will get seeded securely. In
 addition, the client contains its own security mechanisms (like hashing the
 server's output before adding it to the local entropy pool).
 
-Also, run your own server! The code is free and short so you can verify it
+Also, run your own server! The code is free and short, so you can verify it
 yourself.
 
 ### Challenge-response?
@@ -50,7 +50,11 @@ You can reseed automatically once each day by adding the following to your
 crontab (`crontab -e`):
 
     #Set MM and HH to minute and hour of your choice.
-    MM HH * * * cd path/to/D20/ && ./roll.sh
+    MM HH * * * /path/to/D20/roll.sh
+
+The roll script waits for a random period of time at the start to avoid
+contention on the server, even if a large number of instances are set to roll
+at the same time.
 
 ## API
 
@@ -60,6 +64,9 @@ Requires a single argument `challenge`. Returns a JSON blob containing 3 keys:
 * `time`: the server time to the second (to prevent releasing fine-grained timing information) in ISO 8601 format (%Y-%m-%dT%H:%M:%S)
 * `challengeResponse`: the SHA512 sum of the `challenge` as a lower case hexadecimal string
 * `entropy`: the SHA512 sum of the challenge and 128 bytes drawn from `/dev/urandom`
+
+Also optionally reseeds `/dev/urandom` on the server with a high-precision time.
+This behavior is enabled with the `-s` (`--seed`) command line flag.
 
 ## Scripts
 
