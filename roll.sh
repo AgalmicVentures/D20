@@ -22,8 +22,8 @@
 
 set -u
 
-readonly START_WAIT_MAX=10
-readonly STEP_WAIT_MAX=1
+readonly START_WAIT_MAX=15
+readonly STEP_WAIT_MAX=2
 
 #Get the server pool
 if [[ $# -gt 0 ]]
