@@ -39,10 +39,11 @@ echo "Waiting to start (randomized to prevent server contention)..."
 python3 -c "import random, time; time.sleep($START_WAIT_MAX * random.random())"
 
 #Alias sha512sum if necessary on OS X
-SHA512=$(which sha512sum)
-if [[ $? -gt 0 ]] ; then
+if which sha512sum ; then
+	readonly SHA512=sha512sum
+else
 	echo "Aliasing sha512sum to shasum..."
-	SHA512="shasum -a 512"
+	readonly SHA512="shasum -a 512"
 fi
 
 #Get the entropy from each server
