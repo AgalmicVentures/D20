@@ -25,6 +25,14 @@ set -u
 readonly START_WAIT_MAX=15
 readonly STEP_WAIT_MAX=2
 
+#Alias sha512sum if necessary on OS X
+if which sha512sum ; then
+	readonly SHA512=sha512sum
+else
+	echo "Aliasing sha512sum to shasum..."
+	readonly SHA512="shasum -a 512"
+fi
+
 #Waits for a random period of time from 0 to some number of seconds
 randomWait() {
 	python3 -c "import random, time; time.sleep($1 * random.random())"
@@ -63,22 +71,12 @@ else
 	readonly SERVERS=https://agalmicventures.com:8443
 fi
 
+#Get the entropy from each server
 echo "Waiting to start (randomized to prevent server contention)..."
 randomWait "$START_WAIT_MAX"
-
-#Alias sha512sum if necessary on OS X
-if which sha512sum ; then
-	readonly SHA512=sha512sum
-else
-	echo "Aliasing sha512sum to shasum..."
-	readonly SHA512="shasum -a 512"
-fi
-
-#Get the entropy from each server
 for SERVER in $SERVERS
 do
 	queryServer "$SERVER"
 	randomWait "$STEP_WAIT_MAX"
 done
-
 echo "Finished seeding local entropy pool."
