@@ -24,15 +24,15 @@ set -u
 
 ##### Settings #####
 
-COMMAND=D20/__init__.py
+readonly COMMAND=D20/__init__.py
 
 ##### Helpers #####
 
-CWD=`pwd`
-PROCESS=$CWD/$COMMAND
+readonly CWD=$(pwd)
+readonly PROCESS="$CWD/$COMMAND"
 
 function get_processes {
-	ps xa | grep $PROCESS | grep -v grep
+	ps xa | grep "$PROCESS" | grep -v grep
 }
 
 function start {
@@ -77,7 +77,7 @@ function stop {
 	fi
 
 	for N in 0 1 2 3 4; do
-		PID=`echo $PROCESSES | awk '{print $1}'`
+		PID=$(echo $PROCESSES | awk '{print $1}')
 		echo "Stopping PID $PID"
 		kill $@ $PID
 		sleep 1
