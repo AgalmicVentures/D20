@@ -1,1 +1,8 @@
-CherryPy==3.8.1
+cheroot==6.0.0
+CherryPy==13.0.0
+jaraco.classes==1.4.3
+more-itertools==4.0.1
+portend==2.2
+pytz==2017.3
+six==1.11.0
+tempora==1.9
