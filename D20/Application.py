@@ -21,10 +21,19 @@
 
 import binascii
 import cherrypy
+from Crypto.Cipher import AES
+from Crypto.Util import Counter
 import datetime
 import hashlib
 import io
 import json
+import os
+
+#TODO: make this an option, figure out a proper default value, etc.
+ENTROPY_SIZE = 4 * 1024
+
+#TODO: make this an option, figure out a proper default value, etc.
+RESEED_INTERVAL = 1024 * 1024
 
 def jsonResponse(value):
 	cherrypy.response.headers['Content-Type'] = 'application/json'
@@ -49,15 +58,25 @@ class D20ApiApplication(object):
 
 	def __init__(self, seedEntropy=False):
 		self._seedEntropy = seedEntropy
+		self._zeroBlock = b'\x00' * ENTROPY_SIZE
+
+		#OS randomness to use for seeds
 		self._urandom = io.open('/dev/urandom', 'rb')
 		if seedEntropy:
 			self._urandom_w = io.open('/dev/urandom', 'wb')
 
-	@cherrypy.expose
-	def default(self, *args, **kwargs):
-		return jsonResponse({
-			'error': 'API not found',
-		})
+		self._reseed()
+
+	def _reseed(self):
+		"""
+		Reseeds the internal AES-256-CTR-DRBG.
+		"""
+		secret = os.urandom(32) #256 bits
+		iv = os.urandom(16)
+
+		counter = Counter.new(128, initial_value=int.from_bytes(iv, byteorder='little'))
+		self._cipher = AES.new(secret, AES.MODE_CTR, counter=counter)
+		self._n = 0
 
 	@cherrypy.expose
 	def entropy(self, challenge='', **kwargs):
@@ -66,19 +85,25 @@ class D20ApiApplication(object):
 				'error': "No 'challenge' parameter provided (e.g. /api/entropy?challenge=123)",
 			})
 
+		#Reseed the DRBG after a while
+		self._n += 1
+		if self._n >= RESEED_INTERVAL:
+			self._reseed()
+
+		#Get the time
+		now = datetime.datetime.now()
+		iso8601Format = '%Y-%m-%dT%H:%M:%S'
+		nowStr = now.strftime(iso8601Format)
+
+		#TODO: change this to be the hash of the challenge || time
 		h = hashlib.sha512()
 		h.update(challenge.encode('utf8', 'ignore'))
 		challengeResponseBytes = binascii.hexlify(h.digest())
 		challengeResponse = challengeResponseBytes.decode('utf8')
 
-		#Get entropy from /dev/urandom
-		entropy = self._urandom.read(128)
-		h.update(entropy)
-		entropyValue = binascii.hexlify(h.digest()).decode('utf8')
-
-		now = datetime.datetime.now()
-		iso8601Format = '%Y-%m-%dT%H:%M:%S'
-		nowStr = now.strftime(iso8601Format)
+		#Get entropy from an AES-256-CTR-DRBG
+		entropy = self._cipher.encrypt(self._zeroBlock)
+		entropyValue = binascii.hexlify(entropy).decode('utf8')
 
 		#Reseed the entropy pool if necessary
 		if self._seedEntropy:
@@ -89,4 +114,10 @@ class D20ApiApplication(object):
 			'challengeResponse': challengeResponse,
 			'entropy': entropyValue,
 			'time': nowStr,
+		})
+
+	@cherrypy.expose
+	def default(self, *args, **kwargs):
+		return jsonResponse({
+			'error': 'API not found',
 		})

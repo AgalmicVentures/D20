@@ -18,14 +18,15 @@ For an open D20 server, go to https://www.agalmicventures.com:8443/api/entropy.
 ## FAQ
 
 ### Where do you get the entropy?
-Random bytes read from `/dev/urandom` are hashed with the challenge:
-
-    RandomBytes = 128 bytes from /dev/urandom
-    Entropy = SHA512(Challenge || RandomBytes)
+Random bytes read from `/dev/urandom` are used to seed an AES-256-CTR-DRBG.
 
 ### Is `/dev/urandom` really secure? Don't you want to use `/dev/random`?
 Yes. As long as you trust the crypto primitives you rely on the rest of the
 time. This is well covered here: http://www.2uo.de/myths-about-urandom/.
+
+### So why use the AES-256-CTR-DRBG?
+In the unlikely event that `/dev/urandom` relies on a poor algorithm, this
+offers an additional degree of protection.
 
 ### How can I trust the server?
 You don't have to. The client accepts a list of servers to use. As long as at
@@ -37,6 +38,13 @@ Also, run your own server! The code is free and short, so you can verify it
 yourself.
 
 ### Challenge-response?
+When the client queries the server, it includes a challenge value. The server
+returns the challenge response as a hash of the challenge and the ISO 8601
+formatted current time, which is also returned
+
+	Time = %Y-%m-%dT%H:%M:%S
+	ChallengeResponse = SHA512(Challenge || Time)
+
 Although it can't prove the server gave you good entropy, it does prove that the
 server did some work and generated a unique response for your request. It also
 acts as a check that the client queried a valid D20 server.
