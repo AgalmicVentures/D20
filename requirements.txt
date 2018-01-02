@@ -3,6 +3,7 @@ CherryPy==13.1.0
 jaraco.classes==1.4.3
 more-itertools==4.0.1
 portend==2.2
+pycrypto==2.6.1
 pytz==2017.3
 six==1.11.0
 tempora==1.10
