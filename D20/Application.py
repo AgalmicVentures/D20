@@ -95,9 +95,10 @@ class D20ApiApplication(object):
 		iso8601Format = '%Y-%m-%dT%H:%M:%S'
 		nowStr = now.strftime(iso8601Format)
 
-		#TODO: change this to be the hash of the challenge || time
+		#Generate the challenge response: the hash of the challenge || time
 		h = hashlib.sha512()
 		h.update(challenge.encode('utf8', 'ignore'))
+		h.update(nowStr.encode('utf8', 'ignore'))
 		challengeResponseBytes = binascii.hexlify(h.digest())
 		challengeResponse = challengeResponseBytes.decode('utf8')
 

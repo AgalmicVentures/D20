@@ -46,10 +46,11 @@ queryServer() {
 	#Calculate the hash of the highest resolution time available as a challenge (%N is nanos for GNU date)a
 	readonly START_TIME=$(date +%Y%m%d%H%M%S%N)
 	readonly CHALLENGE=$(echo "$START_TIME" | $SHA512 | cut -d' ' -f1)
-	readonly EXPECTED_CHALLENGE_RESPONSE=$(echo -n "$CHALLENGE" | $SHA512 | cut -d' ' -f1)
 
 	#Query the server and check the challenge response
 	readonly RESPONSE=$(curl -s "$SERVER/api/entropy?challenge=$CHALLENGE")
+	readonly RESPONSE_TIME=$(echo "$RESPONSE" | grep -Eo '"time": "[^"]+' | cut -d'"' -f4)
+	readonly EXPECTED_CHALLENGE_RESPONSE=$(echo -n "$CHALLENGE$RESPONSE_TIME" | $SHA512 | cut -d' ' -f1)
 	readonly CHALLENGE_RESPONSE=$(echo "$RESPONSE" | grep -Eo '"challengeResponse": "[0-9a-f]+' | cut -d'"' -f4)
 	if [ "$CHALLENGE_RESPONSE" = "$EXPECTED_CHALLENGE_RESPONSE" ]
 	then
