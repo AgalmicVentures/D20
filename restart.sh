@@ -21,7 +21,8 @@
 # SOFTWARE.
 
 set -e
-set -u
+#XXX: Disabled so the virtual environment will work (yes, this is ridiculous)
+#set -u
 
 ./stop.sh
 sleep 1
