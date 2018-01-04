@@ -1,0 +1,17 @@
+
+[Unit]
+Description=D20 Service
+After=network.target
+
+[Service]
+Type=forking
+User=root
+Group=root
+#EnvironmentFile=/etc/d20/d20.conf
+WorkingDirectory=/home/d20/Code/OpenSource/D20
+ExecStart=/bin/sh -c '/home/d20/Code/OpenSource/D20/start.sh'
+ExecStop=/bin/sh -c '/home/d20/Code/OpenSource/D20/stop.sh'
+ExecReload=/bin/sh -c '/home/d20/Code/OpenSource/D20/restart.sh'
+
+[Install]
+WantedBy=multi-user.target
