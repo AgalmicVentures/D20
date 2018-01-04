@@ -42,6 +42,11 @@ function start {
 		return 0
 	fi
 
+	#Automatically source a virtual environment if available
+	if [ -e myenv ]; then
+		source myenv/bin/activate
+	fi
+
 	echo "Starting..."
 	nohup $PROCESS &
 
