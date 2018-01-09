@@ -112,7 +112,7 @@ class D20ApiApplication(object):
 			self._urandom_w.write(now.strftime('%S.%f').encode('utf8'))
 
 		return jsonResponse({
-			'apiVersion': 1, #Also update in roll.sh
+			'apiVersion': '1', #Also update in roll.sh
 			'challengeResponse': challengeResponse,
 			'entropy': entropyValue,
 			'time': nowStr,
