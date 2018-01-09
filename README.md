@@ -67,8 +67,9 @@ at the same time.
 ## API
 
 ### `/api/entropy`
-Requires a single argument `challenge`. Returns a JSON blob containing 3 keys:
+Requires a single argument `challenge`. Returns a JSON blob containing 4 keys:
 
+* `apiVersion`: a string representing the API version, so clients can ensure compatibility
 * `time`: the server time to the second (to prevent releasing fine-grained timing information) in ISO 8601 format (%Y-%m-%dT%H:%M:%S)
 * `challengeResponse`: the SHA512 sum of the `challenge` as a lower case hexadecimal string
 * `entropy`: the SHA512 sum of the challenge and 128 bytes drawn from `/dev/urandom`
