@@ -49,16 +49,24 @@ queryServer() {
 
 	#Query the server and check the challenge response
 	readonly RESPONSE=$(curl -s "$SERVER/api/entropy?challenge=$CHALLENGE")
-	readonly RESPONSE_TIME=$(echo "$RESPONSE" | grep -Eo '"time": "[^"]+' | cut -d'"' -f4)
-	readonly EXPECTED_CHALLENGE_RESPONSE=$(echo -n "$CHALLENGE$RESPONSE_TIME" | $SHA512 | cut -d' ' -f1)
-	readonly CHALLENGE_RESPONSE=$(echo "$RESPONSE" | grep -Eo '"challengeResponse": "[0-9a-f]+' | cut -d'"' -f4)
-	if [ "$CHALLENGE_RESPONSE" = "$EXPECTED_CHALLENGE_RESPONSE" ]
+
+	readonly EXPECTED_API_VERSION="1"
+	readonly RESPONSE_API_VERSION=$(echo "$RESPONSE" | grep -Eo '"apiVersion": "[^"]+' | cut -d'"' -f4)
+	if [ "$RESPONSE_API_VERSION" == "$EXPECTED_API_VERSION" ]
 	then
-		#Pass through sha512sum to complicate writing a malicious server
-		echo "$RESPONSE" | $SHA512 > /dev/urandom
-		echo "Success."
+		readonly RESPONSE_TIME=$(echo "$RESPONSE" | grep -Eo '"time": "[^"]+' | cut -d'"' -f4)
+		readonly EXPECTED_CHALLENGE_RESPONSE=$(echo -n "$CHALLENGE$RESPONSE_TIME" | $SHA512 | cut -d' ' -f1)
+		readonly CHALLENGE_RESPONSE=$(echo "$RESPONSE" | grep -Eo '"challengeResponse": "[0-9a-f]+' | cut -d'"' -f4)
+		if [ "$CHALLENGE_RESPONSE" = "$EXPECTED_CHALLENGE_RESPONSE" ]
+		then
+			#Pass through sha512sum to complicate writing a malicious server
+			echo "$RESPONSE" | $SHA512 > /dev/urandom
+			echo "Success."
+		else
+			echo "Invalid challenge response (got $CHALLENGE_RESPONSE, expected $EXPECTED_CHALLENGE_RESPONSE)"
+		fi
 	else
-		echo "Invalid challenge response (got $CHALLENGE_RESPONSE, expected $EXPECTED_CHALLENGE_RESPONSE)"
+		echo "Invalid API version (got $RESPONSE_API_VERSION, expected $EXPECTED_API_VERSION)"
 	fi
 }
 
