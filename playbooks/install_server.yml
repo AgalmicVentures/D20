@@ -35,6 +35,8 @@
       dest: /home/d20/Code/OpenSource/D20/
     become: yes
     become_user: d20
+    notify:
+      - restart D20
 
   - name: Creating virtual environment
     pip:
@@ -43,6 +45,8 @@
       requirements: /home/d20/Code/OpenSource/D20/requirements.txt
     become: yes
     become_user: d20
+    notify:
+      - restart D20
 
   - name: Creating systemd service
     file:
@@ -56,3 +60,9 @@
       name: d20
       state: started
       daemon_reload: yes
+
+  handlers:
+  - name: restart D20
+    systemd:
+      name: d20
+      state: restarted
