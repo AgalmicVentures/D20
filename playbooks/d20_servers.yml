@@ -19,50 +19,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-- hosts: all
-  tasks:
-  - name: Creating account
-    user:
-      name: d20
-      comment: D20
-      shell: /bin/bash
-      generate_ssh_key: yes
-      ssh_key_type: ed25519
-
-  - name: Cloning D20 repository
-    git:
-      repo: https://github.com/AgalmicVentures/D20.git
-      dest: /home/d20/Code/OpenSource/D20/
-    become: yes
-    become_user: d20
-    notify:
-      - restart D20
-
-  - name: Creating virtual environment
-    pip:
-      virtualenv: /home/d20/Code/OpenSource/D20/myenv
-      virtualenv_command: pyvenv
-      requirements: /home/d20/Code/OpenSource/D20/requirements.txt
-    become: yes
-    become_user: d20
-    notify:
-      - restart D20
-
-  - name: Creating systemd service
-    file:
-      src: /home/d20/Code/OpenSource/D20/system/d20.service
-      dest: /lib/systemd/system/d20.service
-      state: link
-      force: yes
-
-  - name: Starting service
-    systemd:
-      name: d20
-      state: started
-      daemon_reload: yes
-
-  handlers:
-  - name: restart D20
-    systemd:
-      name: d20
-      state: restarted
+- hosts: d20_servers
+  roles:
+    - d20_server

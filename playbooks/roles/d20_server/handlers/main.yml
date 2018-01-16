@@ -1,0 +1,5 @@
+
+  - name: restart D20
+    systemd:
+      name: d20
+      state: restarted
