@@ -25,8 +25,8 @@ After=network.target
 
 [Service]
 Type=forking
-User=root
-Group=root
+User=d20
+Group=d20
 #EnvironmentFile=/etc/d20/d20.conf
 WorkingDirectory=/home/d20/Code/OpenSource/D20
 ExecStart=/bin/sh -c '/home/d20/Code/OpenSource/D20/start.sh'
