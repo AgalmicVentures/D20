@@ -36,7 +36,7 @@
   become: yes
   become_user: d20
   notify:
-    - restart D20
+    - restart d20
   tags:
     - d20
 
@@ -48,7 +48,7 @@
   become: yes
   become_user: d20
   notify:
-    - restart D20
+    - restart d20
   tags:
     - d20
 
@@ -58,6 +58,8 @@
     dest: /lib/systemd/system/d20.service
     state: link
     force: yes
+  notify:
+    - restart d20
   tags:
     - d20
 

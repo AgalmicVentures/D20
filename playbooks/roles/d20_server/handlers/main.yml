@@ -1,5 +1,6 @@
 
-  - name: restart D20
+  - name: restart d20
     systemd:
       name: d20
       state: restarted
+      daemon_reload: yes
