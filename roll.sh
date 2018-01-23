@@ -59,8 +59,8 @@ queryServer() {
 		readonly CHALLENGE_RESPONSE=$(echo "$RESPONSE" | grep -Eo '"challengeResponse": "[0-9a-f]+' | cut -d'"' -f4)
 		if [ "$CHALLENGE_RESPONSE" = "$EXPECTED_CHALLENGE_RESPONSE" ]
 		then
-			#Pass through sha512sum to complicate writing a malicious server
-			echo "$RESPONSE" | $SHA512 > /dev/urandom
+			#TODO: Pass through something to complicate writing a malicious server
+			echo "$RESPONSE" > /dev/urandom
 			echo "Success."
 		else
 			echo "Invalid challenge response (got $CHALLENGE_RESPONSE, expected $EXPECTED_CHALLENGE_RESPONSE)"
