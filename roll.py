@@ -77,7 +77,7 @@ def main(argv=None):
 			if responseStr is None:
 				print('Got no response from %s' % server)
 				continue
-			responseStr = responseStr.encode('utf-8')
+			responseStr = responseStr.decode('utf-8')
 
 			try:
 				response = json.loads(responseStr)
