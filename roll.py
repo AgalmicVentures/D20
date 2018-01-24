@@ -99,7 +99,7 @@ def main(argv=None):
 					if os.getuid() == 0:
 						#See http://man7.org/linux/man-pages/man4/random.4.html
 						entropySize = len(entropy)
-						entropyBitCount = (entropySize * 8) / 8 #Divide by 8 as a safety factor
+						entropyBitCount = (entropySize * 8) // 10 #Divide by 10 as a safety factor
 						randPoolInfo = struct.pack("ii32s", entropyBitCount, len(entropy), entropy)
 						result = fcntl.ioctl(devRandom, RNDADDENTROPY, randPoolInfo)
 					else:
