@@ -74,7 +74,10 @@ def main(argv=None):
 			#Query the server and check the challenge response
 			#NOTE: Using curl rather than requests to skip the dependency
 			responseStr = subprocess.check_output(['curl', '-s', '%s/api/entropy?challenge=%s' % (server, challenge)])
-			print('response: %s' % responseStr)
+			if responseStr is None:
+				print('Got no response from %s' % server)
+				continue
+			responseStr = responseStr.encode('utf-8')
 
 			try:
 				response = json.loads(responseStr)
