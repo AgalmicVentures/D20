@@ -30,7 +30,7 @@ import json
 import os
 
 #TODO: make this an option, figure out a proper default value, etc.
-ENTROPY_SIZE = 256 * 1024
+ENTROPY_SIZE = 4 * 1024
 
 #TODO: make this an option, figure out a proper default value, etc.
 RESEED_INTERVAL = 1024 * 1024
