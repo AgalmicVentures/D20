@@ -98,9 +98,10 @@ def main(argv=None):
 					#Increment the entropy counter as root
 					if os.getuid() == 0:
 						#See http://man7.org/linux/man-pages/man4/random.4.html
-						entropySize = len(entropy)
-						entropyBitCount = (entropySize * 8) // 100 #Divide by a safety factor
-						randPoolInfo = struct.pack("ii32s", entropyBitCount, len(entropy), entropy)
+						entropyBytes = len(entropy)
+						entropyBits = entropyBytes * 8
+						entropyBitsConservative = min(entropyBits // 64, 64) #Divide by 64, only allow 64 total
+						randPoolInfo = struct.pack("ii32s", entropyBitsConservative, len(entropy), entropy)
 						result = fcntl.ioctl(devRandom, RNDADDENTROPY, randPoolInfo)
 					else:
 						devRandom.write(entropy)
