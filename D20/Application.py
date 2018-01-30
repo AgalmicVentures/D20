@@ -29,9 +29,11 @@ import io
 import json
 import os
 
-#TODO: make this an option, figure out a proper default value, etc.
-ENTROPY_SIZE = 4 * 1024
+#Size of entropy in 32 byte (256 bit) blocks
+#TODO: make this an option
+ENTROPY_SIZE = 16 * 32
 
+#How often to reseed the DRBG
 #TODO: make this an option, figure out a proper default value, etc.
 RESEED_INTERVAL = 1024 * 1024
 

@@ -99,8 +99,8 @@ def main(argv=None):
 					if os.getuid() == 0:
 						#See http://man7.org/linux/man-pages/man4/random.4.html
 						entropyBytes = len(entropy)
-						entropyBits = entropyBytes * 8
-						entropyBitsConservative = min(entropyBits // 64, 64) #Divide by 64, only allow 64 total
+						entropyBits = entropyBytes * 8 // 64 #Divide by 64 to be conservative
+						entropyBitsConservative = min(entropyBits, 64) #Only allow 64 bits total
 						randPoolInfo = struct.pack("ii32s", entropyBitsConservative, len(entropy), entropy)
 						result = fcntl.ioctl(devRandom, RNDADDENTROPY, randPoolInfo)
 					else:
