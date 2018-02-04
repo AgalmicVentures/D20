@@ -63,9 +63,8 @@ class D20ApiApplication(object):
 		self._zeroBlock = b'\x00' * ENTROPY_SIZE
 
 		#OS randomness to use for seeds
-		self._urandom = io.open('/dev/urandom', 'rb')
 		if seedEntropy:
-			self._urandom_w = io.open('/dev/urandom', 'wb')
+			self._urandom = io.open('/dev/urandom', 'wb')
 
 		self._reseed()
 
@@ -110,8 +109,8 @@ class D20ApiApplication(object):
 
 		#Reseed the entropy pool if necessary
 		if self._seedEntropy:
-			self._urandom_w.write(challengeResponseBytes)
-			self._urandom_w.write(now.strftime('%S.%f').encode('utf8'))
+			self._urandom.write(challengeResponseBytes)
+			self._urandom.write(now.strftime('%S.%f').encode('utf8'))
 
 		return jsonResponse({
 			'apiVersion': '1', #Also update in roll.sh
