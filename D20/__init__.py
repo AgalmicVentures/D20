@@ -26,26 +26,37 @@ import sys
 
 import Application
 
+#Size of entropy in 32 byte (256 bit) blocks
+DEFAULT_ENTROPY_SIZE = 16 * 32
+
+#How often to reseed the DRBG
+DEFAULT_RESEED_INTERVAL = 1024 * 1024
+
 def secureHeaders():
 	"""
 	Adds HTTP headers for security. This function is not called directly, but
 	rather it is invoked by CherryPy as a tool before finalizing the response
 	to a request.
 	"""
-    cherrypy.response.headers['X-Frame-Options'] = 'DENY'
-    cherrypy.response.headers['X-XSS-Protection'] = '1; mode=block'
-    cherrypy.response.headers['Content-Security-Policy'] = "default-src='self'"
+	cherrypy.response.headers['X-Frame-Options'] = 'DENY'
+	cherrypy.response.headers['X-XSS-Protection'] = '1; mode=block'
+	cherrypy.response.headers['Content-Security-Policy'] = "default-src='self'"
 
 cherrypy.tools.secureHeaders = cherrypy.Tool('before_finalize', secureHeaders)
 
 def main():
 	parser = argparse.ArgumentParser(description='D20 Entropy Microservice')
-	parser.add_argument('-s', '--seed', action='store_true', help='Seed the entropy pool with hashed data from requests.')
+	parser.add_argument('-e', '--entropy-size', action='store', type=int, default=DEFAULT_ENTROPY_SIZE,
+		help='Size of entropy to return in bytes (default 16 512-bit blocks).')
+	parser.add_argument('-r', '--reseed-interval', action='store', type=int, default=DEFAULT_RESEED_INTERVAL,
+		help='Reseed the internal DRBG at this frequency (default 2^20).')
+	parser.add_argument('-s', '--seed-urandom', action='store_true',
+		help='Seed the entropy pool with hashed data from requests.')
 	arguments = parser.parse_args(sys.argv[1:])
 
 	print('Starting up D20...')
 
-	d20 = Application.D20Application(arguments.seed)
+	d20 = Application.D20Application(arguments)
 	cherrypy.quickstart(d20, config='server.conf')
 
 	print('Shutting down D20...')

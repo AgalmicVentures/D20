@@ -29,14 +29,6 @@ import io
 import json
 import os
 
-#Size of entropy in 32 byte (256 bit) blocks
-#TODO: make this an option
-ENTROPY_SIZE = 16 * 32
-
-#How often to reseed the DRBG
-#TODO: make this an option, figure out a proper default value, etc.
-RESEED_INTERVAL = 1024 * 1024
-
 def jsonResponse(value):
 	"""
 	Helper to return a JSON blob as an HTTP response by serializing it and setting headers correctly.
@@ -49,8 +41,8 @@ def jsonResponse(value):
 
 class D20Application(object):
 
-	def __init__(self, seedEntropy=False):
-		self.api = D20ApiApplication(seedEntropy=seedEntropy)
+	def __init__(self, arguments):
+		self.api = D20ApiApplication(arguments)
 
 	@cherrypy.expose
 	def default(self, *args, **kwargs):
@@ -67,12 +59,13 @@ class D20Application(object):
 
 class D20ApiApplication(object):
 
-	def __init__(self, seedEntropy=False, entropySize=ENTROPY_SIZE):
-		self._seedEntropy = seedEntropy
-		self._zeroBlock = b'\x00' * entropySize
+	def __init__(self, arguments):
+		self._reseedInterval = arguments.reseed_interval
+		self._seedEntropy = arguments.seed_urandom
+		self._zeroBlock = b'\x00' * arguments.entropy_size
 
 		#OS randomness to use for seeds
-		if seedEntropy:
+		if self._seedEntropy:
 			self._urandom = io.open('/dev/urandom', 'wb')
 
 		self._reseed()
@@ -106,7 +99,7 @@ class D20ApiApplication(object):
 
 		#Reseed the DRBG after a while
 		self._n += 1
-		if self._n >= RESEED_INTERVAL:
+		if self._n >= self._reseedInterval:
 			self._reseed()
 
 		#Get the time
