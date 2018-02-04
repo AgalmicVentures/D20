@@ -83,7 +83,11 @@ class D20ApiApplication(object):
 	def entropy(self, challenge='', **kwargs):
 		if challenge == '':
 			return jsonResponse({
-				'error': "No 'challenge' parameter provided (e.g. /api/entropy?challenge=123)",
+				'error': "No 'challenge' parameter provided (e.g. /api/entropy?challenge=0123456789ABCDEF)",
+			})
+		elif len(challenge) < 8:
+			return jsonResponse({
+				'error': "'challenge' parameter provided is too short; must be at least 8 bytes",
 			})
 
 		#Reseed the DRBG after a while
