@@ -38,6 +38,12 @@ ENTROPY_SIZE = 16 * 32
 RESEED_INTERVAL = 1024 * 1024
 
 def jsonResponse(value):
+	"""
+	Helper to return a JSON blob as an HTTP response by serializing it and setting headers correctly.
+
+	:param value: dict
+	:return: str
+	"""
 	cherrypy.response.headers['Content-Type'] = 'application/json'
 	return json.dumps(value, indent=4, sort_keys=True).encode('utf8')
 
@@ -48,6 +54,9 @@ class D20Application(object):
 
 	@cherrypy.expose
 	def default(self, *args, **kwargs):
+		"""
+		By default, give a user some instructions, since if they are seeing this, they likely arrived manually.
+		"""
 		return ''.join([
 			'<html><body>',
 			'<h1>D20 - Page Not Found</h1>',
@@ -58,9 +67,9 @@ class D20Application(object):
 
 class D20ApiApplication(object):
 
-	def __init__(self, seedEntropy=False):
+	def __init__(self, seedEntropy=False, entropySize=ENTROPY_SIZE):
 		self._seedEntropy = seedEntropy
-		self._zeroBlock = b'\x00' * ENTROPY_SIZE
+		self._zeroBlock = b'\x00' * entropySize
 
 		#OS randomness to use for seeds
 		if seedEntropy:
@@ -81,6 +90,11 @@ class D20ApiApplication(object):
 
 	@cherrypy.expose
 	def entropy(self, challenge='', **kwargs):
+		"""
+		API to return entropy to a client.
+
+		:param challenge: str Containing a challenge value that will be used to prove the recency of the result.
+		"""
 		if challenge == '':
 			return jsonResponse({
 				'error': "No 'challenge' parameter provided (e.g. /api/entropy?challenge=0123456789ABCDEF)",
@@ -125,6 +139,9 @@ class D20ApiApplication(object):
 
 	@cherrypy.expose
 	def default(self, *args, **kwargs):
+		"""
+		By default, all other API calls return an error.
+		"""
 		return jsonResponse({
 			'error': 'API not found',
 		})

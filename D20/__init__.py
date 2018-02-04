@@ -27,6 +27,11 @@ import sys
 import Application
 
 def secureHeaders():
+	"""
+	Adds HTTP headers for security. This function is not called directly, but
+	rather it is invoked by CherryPy as a tool before finalizing the response
+	to a request.
+	"""
     cherrypy.response.headers['X-Frame-Options'] = 'DENY'
     cherrypy.response.headers['X-XSS-Protection'] = '1; mode=block'
     cherrypy.response.headers['Content-Security-Policy'] = "default-src='self'"
