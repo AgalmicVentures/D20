@@ -62,6 +62,11 @@ def main(argv=None):
 
 	randomSleep(START_WAIT_MAX)
 
+	#Some features are only available on Linux
+	uname = os.uname()
+	isLinux = uname.sysname == 'Linux'
+	isRoot = os.getuid() == 0
+
 	with open("/dev/random", mode='wb') as devRandom:
 		for server in arguments.servers:
 			print('Seeding from %s' % server)
@@ -96,7 +101,7 @@ def main(argv=None):
 					entropy = binascii.unhexlify(entropyHex)
 
 					#Increment the entropy counter as root
-					if os.getuid() == 0:
+					if isLinux and isRoot:
 						#See http://man7.org/linux/man-pages/man4/random.4.html
 						entropyBytes = len(entropy)
 						entropyBits = entropyBytes * 8 // 64 #Divide by 64 to be conservative
