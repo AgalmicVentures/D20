@@ -75,7 +75,7 @@ def main(argv=None):
 			print('Seeding from %s' % server)
 
 			#Calculate the hash of the highest resolution time available as a challenge (%N is nanos for GNU date)a
-			now = datetime.datetime.now()
+			now = datetime.datetime.utcnow()
 			nowStr = now.strftime('%Y%m%d %H%M%S.%f')
 			challenge = hashlib.sha512(nowStr.encode('utf-8')).hexdigest()
 

@@ -103,7 +103,7 @@ class D20ApiApplication(object):
 			self._reseed()
 
 		#Get the time
-		now = datetime.datetime.now()
+		now = datetime.datetime.utcnow()
 		iso8601Format = '%Y-%m-%dT%H:%M:%S'
 		nowStr = now.strftime(iso8601Format)
 
