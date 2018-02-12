@@ -76,7 +76,7 @@ def main(argv=None):
 
 			#Calculate the hash of the highest resolution time available as a challenge (%N is nanos for GNU date)a
 			now = datetime.datetime.utcnow()
-			nowStr = now.strftime('%Y%m%d %H%M%S.%f')
+			nowStr = now.strftime('%Y-%m-%dT%H:%M:%S.%f')
 			challenge = hashlib.sha512(nowStr.encode('utf-8')).hexdigest()
 
 			#Query the server and check the challenge response
