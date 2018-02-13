@@ -52,7 +52,9 @@ def randomSleep(maxSec):
 def main(argv=None):
 	parser = argparse.ArgumentParser(description='Roll Some D20.')
 	parser.add_argument('--max-entropy', type=int, default=2048,
-		help='Maximum entropy in the pool to still roll.')
+		help='Maximum entropy in the pool to still roll (default 2048).')
+	parser.add_argument('--max-timestamp-deviation', type=float, default=10.0,
+		help='Maximum server-client timestamp deviation in seconds (default 10s).')
 	parser.add_argument('servers', nargs='*',
 		help='Servers to seed the entropy pool from.')
 
@@ -103,7 +105,7 @@ def main(argv=None):
 				if challengeResponse == expectedChallengeResponse:
 					#Check the freshness of the timestamp
 					parsedResponseTime = datetime.datetime.strptime(responseTime, '%Y-%m-%dT%H:%M:%S')
-					if abs((now - parsedResponseTime).total_seconds()) < 10.0:
+					if abs((now - parsedResponseTime).total_seconds()) < arguments.max_timestamp_deviation:
 						#TODO: Pass through something to complicate writing a malicious server
 						entropyHex = response['entropy']
 						entropy = binascii.unhexlify(entropyHex)
