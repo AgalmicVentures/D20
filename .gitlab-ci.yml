@@ -32,6 +32,7 @@ test_job:
   stage: test
   script:
     - ./start.sh
+    - ./Roll.py --strict http://localhost:27184
     - ./stop.sh
   only:
     - master
