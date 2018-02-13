@@ -55,6 +55,8 @@ def main(argv=None):
 		help='Maximum entropy in the pool to still roll (default 2048).')
 	parser.add_argument('--max-timestamp-deviation', type=float, default=10.0,
 		help='Maximum server-client timestamp deviation in seconds (default 10s).')
+	parser.add_argument('--strict', action='store_true',
+		help='Quit with an error if any of the servers fail.')
 	parser.add_argument('servers', nargs='*',
 		help='Servers to seed the entropy pool from.')
 
@@ -73,6 +75,7 @@ def main(argv=None):
 	isRoot = os.getuid() == 0
 
 	with open("/dev/random", mode='wb') as devRandom:
+		failed = False
 		for server in arguments.servers:
 			print('Seeding from %s' % server)
 
@@ -133,12 +136,19 @@ def main(argv=None):
 						print('Success.')
 					else:
 						print('Timestamp not fresh (got %s vs %s)' % (responseTime, now))
+						failed = True
 				else:
 					print('Invalid challenge response (got %s, expected %s)' % (challengeResponse, expectedChallengeResponse))
+					failed = True
 			else:
 				print('Invalid API version (got %s, expected %s)' % (responseApiVersion, EXPECTED_API_VERSION))
+				failed = True
 
 			randomSleep(STEP_WAIT_MAX)
+
+		#Return a failure, if one happened
+		if arguments.strict and failed:
+			return 1
 
 	return 0
 
