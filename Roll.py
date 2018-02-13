@@ -93,37 +93,44 @@ def main(argv=None):
 				print('Error parsing JSON from %s' % server)
 				continue
 
+			#Check the API version
 			responseApiVersion = response['apiVersion']
 			if responseApiVersion == EXPECTED_API_VERSION:
+				#Check the challenge response
 				responseTime = response['time']
 				expectedChallengeResponse = hashlib.sha512((challenge + responseTime).encode('utf-8')).hexdigest()
 				challengeResponse = response['challengeResponse']
 				if challengeResponse == expectedChallengeResponse:
-					#TODO: Pass through something to complicate writing a malicious server
-					entropyHex = response['entropy']
-					entropy = binascii.unhexlify(entropyHex)
+					#Check the freshness of the timestamp
+					parsedResponseTime = datetime.datetime.strptime(responseTime, '%Y-%m-%dT%H:%M:%S')
+					if abs((now - parsedResponseTime).total_seconds()) < 10.0:
+						#TODO: Pass through something to complicate writing a malicious server
+						entropyHex = response['entropy']
+						entropy = binascii.unhexlify(entropyHex)
 
-					#Check that not too much entropy is being put in the pool
-					if isLinux:
-						try:
-							entropyAvailable = int(open(ENTROPY_COUNT_FILE).read()[:-1])
-							if entropyAvailable >= arguments.max_entropy:
-								print('Available entropy %d over threshold, exiting' % entropyAvailable)
-								break
-						except (IOError, ValueError):
-							pass #Ignore this check if the file can't be read
+						#Check that not too much entropy is being put in the pool
+						if isLinux:
+							try:
+								entropyAvailable = int(open(ENTROPY_COUNT_FILE).read()[:-1])
+								if entropyAvailable >= arguments.max_entropy:
+									print('Available entropy %d over threshold, exiting' % entropyAvailable)
+									break
+							except (IOError, ValueError):
+								pass #Ignore this check if the file can't be read
 
-					#Increment the entropy counter as root
-					if isLinux and isRoot:
-						#See http://man7.org/linux/man-pages/man4/random.4.html
-						entropyBytes = len(entropy)
-						entropyBits = entropyBytes * 8 // 64 #Divide by 64 to be conservative
-						entropyBitsConservative = min(entropyBits, 64) #Only allow 64 bits total
-						randPoolInfo = struct.pack("ii32s", entropyBitsConservative, len(entropy), entropy)
-						result = fcntl.ioctl(devRandom, RNDADDENTROPY, randPoolInfo)
+						#Increment the entropy counter as root
+						if isLinux and isRoot:
+							#See http://man7.org/linux/man-pages/man4/random.4.html
+							entropyBytes = len(entropy)
+							entropyBits = entropyBytes * 8 // 64 #Divide by 64 to be conservative
+							entropyBitsConservative = min(entropyBits, 64) #Only allow 64 bits total
+							randPoolInfo = struct.pack("ii32s", entropyBitsConservative, len(entropy), entropy)
+							result = fcntl.ioctl(devRandom, RNDADDENTROPY, randPoolInfo)
+						else:
+							devRandom.write(entropy)
+						print('Success.')
 					else:
-						devRandom.write(entropy)
-					print('Success.')
+						print('Timestamp not fresh (got %s vs %s)' % (responseTime, now))
 				else:
 					print('Invalid challenge response (got %s, expected %s)' % (challengeResponse, expectedChallengeResponse))
 			else:
