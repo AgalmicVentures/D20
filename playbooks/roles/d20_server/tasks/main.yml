@@ -67,6 +67,7 @@
   systemd:
     name: d20
     state: started
+    enabled: yes
     daemon_reload: yes
   tags:
     - d20
