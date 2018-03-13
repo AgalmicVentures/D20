@@ -28,10 +28,12 @@ import hashlib
 import json
 import os
 import random
+import socket
 import struct
 import subprocess
 import sys
 import time
+import urllib.parse
 
 EXPECTED_API_VERSION = '1'
 
@@ -49,6 +51,12 @@ def randomSleep(maxSec):
 	"""
 	time.sleep(maxSec * random.random())
 
+def getUrl(url):
+	responseStr = subprocess.check_output(['curl', '-s', url])
+	if responseStr is None:
+		return None
+	return responseStr.decode('utf-8')
+
 def main(argv=None):
 	parser = argparse.ArgumentParser(description='Roll Some D20.')
 	parser.add_argument('--max-entropy', type=int, default=2048,
@@ -57,6 +65,8 @@ def main(argv=None):
 		help='Maximum server-client timestamp deviation in seconds (default 10s).')
 	parser.add_argument('--strict', action='store_true',
 		help='Quit with an error if any of the servers fail.')
+	parser.add_argument('--check-local', action='store_true',
+		help='Check that it is not a local server being queried.')
 	parser.add_argument('servers', nargs='*',
 		help='Servers to seed the entropy pool from.')
 
@@ -74,9 +84,24 @@ def main(argv=None):
 	isLinux = uname.sysname == 'Linux'
 	isRoot = os.getuid() == 0
 
+	#Get the local public IP address
+	if arguments.check_local:
+		#TODO: figure out a better way to do this
+		localIp = getUrl('https://icanhazip.com/')
+	else:
+		localIp = None
+
 	with open("/dev/random", mode='wb') as devRandom:
 		failed = False
 		for server in arguments.servers:
+			if localIp is not None:
+				urlParts = urllib.parse.urlparse(server)
+				serverHost, _ = urllib.parse.splitport(urlParts.netloc)
+				serverIp = socket.gethostbyname(serverHost)
+				if serverIp == localIp:
+					print('Skipping %s -- it is the local host' % server)
+					continue
+
 			print('Seeding from %s' % server)
 
 			#Calculate the hash of the highest resolution time available as a challenge (%N is nanos for GNU date)a
@@ -86,11 +111,10 @@ def main(argv=None):
 
 			#Query the server and check the challenge response
 			#NOTE: Using curl rather than requests to skip the dependency
-			responseStr = subprocess.check_output(['curl', '-s', '%s/api/entropy?challenge=%s' % (server, challenge)])
+			responseStr = getUrl('%s/api/entropy?challenge=%s' % (server, challenge))
 			if responseStr is None:
 				print('Got no response from %s' % server)
 				continue
-			responseStr = responseStr.decode('utf-8')
 
 			try:
 				response = json.loads(responseStr)
