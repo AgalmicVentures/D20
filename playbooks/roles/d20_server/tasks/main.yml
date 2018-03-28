@@ -42,7 +42,7 @@
 
 - name: Creating virtual environment
   pip:
-    virtualenv: /home/d20/Code/OpenSource/D20/myenv
+    virtualenv: /home/d20/Code/OpenSource/D20/env
     virtualenv_command: pyvenv
     requirements: /home/d20/Code/OpenSource/D20/requirements.txt
   become: yes

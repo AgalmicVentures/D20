@@ -57,6 +57,5 @@ docs/_build/
 target/
 
 # Other
-myenv/
 nohup.out
 
