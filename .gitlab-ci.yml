@@ -31,8 +31,10 @@ stages:
 test_job:
   stage: test
   script:
+    #Run on a different port since the CI server may serve entropy too
+    - sed -i -e 's/server.socket_port = 27184/server.socket_port = 17184/' server.conf
     - ./start.sh
-    - ./Roll.py --strict http://localhost:27184
+    - ./Roll.py --strict http://localhost:17184
     - ./stop.sh
   only:
     - master
