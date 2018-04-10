@@ -38,6 +38,7 @@ EXPECTED_API_VERSION = '1'
 START_WAIT_MAX = 15
 STEP_WAIT_MAX = 2
 
+ENTROPY_COUNT_FILE = '/proc/sys/kernel/random/entropy_avail'
 RNDADDENTROPY = 0x40085203
 
 def randomSleep(maxSec):
@@ -50,6 +51,8 @@ def randomSleep(maxSec):
 
 def main(argv=None):
 	parser = argparse.ArgumentParser(description='Roll Some D20.')
+	parser.add_argument('--max-entropy', type=int, default=2048,
+		help='Maximum entropy in the pool to still roll.')
 	parser.add_argument('servers', nargs='*',
 		help='Servers to seed the entropy pool from.')
 
@@ -99,6 +102,16 @@ def main(argv=None):
 					#TODO: Pass through something to complicate writing a malicious server
 					entropyHex = response['entropy']
 					entropy = binascii.unhexlify(entropyHex)
+
+					#Check that not too much entropy is being put in the pool
+					if isLinux:
+						try:
+							entropyAvailable = int(open(ENTROPY_COUNT_FILE).read()[:-1])
+							if entropyAvailable >= arguments.max_entropy:
+								print('Available entropy %d over threshold, exiting' % entropyAvailable)
+								break
+						except (IOError, ValueError):
+							pass #Ignore this check if the file can't be read
 
 					#Increment the entropy counter as root
 					if isLinux and isRoot:
