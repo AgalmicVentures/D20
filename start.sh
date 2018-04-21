@@ -24,4 +24,4 @@
 #set -u
 source service.sh
 
-start
+start "$@"

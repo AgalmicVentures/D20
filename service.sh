@@ -33,38 +33,35 @@ readonly CWD=$(pwd)
 readonly PROCESS="$CWD/$COMMAND"
 
 function get_processes {
+	# shellcheck disable=SC2009
 	ps xa | grep "$PROCESS" | grep -v grep
 }
 
 function start {
-	PROCESSES=$(get_processes)
-	if [[ $? -eq 0 ]]; then
+	if get_processes > /dev/null; then
 		echo "Already running"
 		return 0
 	fi
 
 	#Automatically source a virtual environment if available
 	if [ -e env/ ]; then
+		# shellcheck disable=SC1091
 		source env/bin/activate
 	fi
 
 	echo "Starting..."
-	nohup $PROCESS &
+	nohup "$PROCESS" "$@" &
 
-	for N in 0 1 2 3 4 5 6 7 8 9; do
-		PROCESSES=$(get_processes)
-		if [[ $? -ne 0 ]]; then
-			echo "Startup failed:"
-			echo
-			tail -n20 nohup.out
-			return 1
+	#Wait 10 seconds to ensure a successful start
+	for _ in 0 1 2 3 4 5 6 7 8 9; do
+		if get_processes > /dev/null; then
+			sleep 1
+		else
+			break
 		fi
-
-		sleep 1
 	done
 
-	PROCESSES=$(get_processes)
-	if [[ $? -eq 0 ]]; then
+	if get_processes > /dev/null; then
 		echo "Started."
 		return 0
 	else
@@ -82,10 +79,10 @@ function stop {
 		return 0
 	fi
 
-	for N in 0 1 2 3 4; do
-		PID=$(echo $PROCESSES | awk '{print $1}')
-		echo "Stopping PID $PID"
-		kill $@ $PID
+	for _ in 0 1 2 3 4; do
+		PIDS=$(echo "$PROCESSES" | awk '{print $1}')
+		echo "Stopping PID $PIDS"
+		kill "$@" "$PIDS"
 		sleep 1
 
 		PROCESSES=$(get_processes)
@@ -97,7 +94,8 @@ function stop {
 	done
 
 	#If it's still alive, it's not responding to normal signals, so kill it
-	echo "Killing PID $PID"
-	kill -9 $PID
+	PIDS=$(echo "$PROCESSES" | awk '{print $1}')
+	echo "Killing PID $PIDS"
+	kill -9 "$PIDS"
 	sleep 1
 }
