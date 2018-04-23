@@ -32,7 +32,7 @@ stages:
 shellcheck_lint_job:
   stage: lint
   script:
-    - shellcheck scripts/*.sh
+    - shellcheck *.sh
   only:
     - master
 
