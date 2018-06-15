@@ -48,7 +48,6 @@ DEFAULT_RESEED_INTERVAL = 1024 * 1024
 class RandomBitGenerator(object):
 
 	def __init__(self, arguments):
-
 		self._reseedInterval = arguments.reseed_interval
 		self._seedEntropy = arguments.seed_urandom
 		self._zeroBlock = b'\x00' * arguments.entropy_size
@@ -94,6 +93,9 @@ app = flask.Flask('D20')
 
 @app.errorhandler(404)
 def error404(e):
+	"""
+	404 error handler.
+	"""
 	return ''.join([
 		'<html><body>',
 		'<h1>D20 - Page Not Found</h1>',

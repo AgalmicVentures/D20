@@ -56,9 +56,10 @@ def randomSleep(maxSec):
 
 def getUrl(url):
 	"""
-	TODO
+	A helper to do an HTTP GET without requiring 3rd party libraries.
 
-	:param url: TODO
+	:param url: str The URL to GET.
+	:return: str
 	"""
 	responseStr = subprocess.check_output(['curl', '-s', url])
 	if responseStr is None:
