@@ -91,7 +91,7 @@ def main(argv=None):
 	else:
 		localIp = None
 
-	with open("/dev/random", mode='wb') as devRandom:
+	with open('/dev/random', mode='wb') as devRandom:
 		failed = False
 		for server in arguments.servers:
 			if localIp is not None:

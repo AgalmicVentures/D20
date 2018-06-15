@@ -43,6 +43,8 @@ DEFAULT_RESEED_INTERVAL = 1024 * 1024
 
 ##### Application #####
 
+#TODO: move this to another file
+#TODO: unit test
 class RandomBitGenerator(object):
 
 	def __init__(self, arguments):
@@ -56,6 +58,8 @@ class RandomBitGenerator(object):
 			self._urandom = open('/dev/urandom', 'wb')
 
 		self.reseed()
+
+		#TODO: self-test
 
 	def reseed(self):
 		"""
