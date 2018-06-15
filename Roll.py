@@ -111,7 +111,7 @@ def main(argv=None):
 
 			#Query the server and check the challenge response
 			#NOTE: Using curl rather than requests to skip the dependency
-			responseStr = getUrl('%s/api/entropy?challenge=%s' % (server, challenge))
+			responseStr = getUrl(os.path.join(server, 'api/entropy?challenge=%s' % challenge))
 			if responseStr is None:
 				print('Got no response from %s' % server)
 				continue
