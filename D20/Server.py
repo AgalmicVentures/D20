@@ -145,6 +145,12 @@ def entropy():
 	})
 
 def main(argv=None):
+	"""
+	The main function of this script.
+
+	:param argv: List[str] Arguments to parse (default sys.argv)
+	:return: int
+	"""
 	parser = argparse.ArgumentParser(description='D20 Entropy Microservice')
 	parser.add_argument('-p', '--port', action='store', type=int, default=DEFAULT_PORT,
 		help='TCP port to run on.')

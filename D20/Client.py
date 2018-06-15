@@ -25,7 +25,10 @@ import binascii
 import datetime
 import fcntl
 import hashlib
-import json
+try:
+	import ujson as json
+except ImportError:
+	import json
 import os
 import random
 import socket
@@ -52,12 +55,23 @@ def randomSleep(maxSec):
 	time.sleep(maxSec * random.random())
 
 def getUrl(url):
+	"""
+	TODO
+
+	:param url: TODO
+	"""
 	responseStr = subprocess.check_output(['curl', '-s', url])
 	if responseStr is None:
 		return None
 	return responseStr.decode('utf-8')
 
 def main(argv=None):
+	"""
+	The main function of this script.
+
+	:param argv: List[str] Arguments to parse (default sys.argv)
+	:return: int
+	"""
 	parser = argparse.ArgumentParser(description='Roll Some D20.')
 	parser.add_argument('--max-entropy', type=int, default=2048,
 		help='Maximum entropy in the pool to still roll (default 2048).')
