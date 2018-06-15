@@ -38,7 +38,7 @@ Also, run your own server! The code is free and short, so you can verify it
 yourself.
 
 ### Challenge-response?
-When the client (`Roll.py`) queries the server, it includes a challenge value.
+When the client queries the server, it includes a challenge value.
 The server returns the challenge response as a hash of the challenge and the
 ISO 8601 formatted current time, which is also returned
 
@@ -49,11 +49,11 @@ Although it can't prove the server gave you good entropy, it does prove that the
 server did some work and generated a unique response for your request. It also
 acts as a check that the client queried a valid D20 server.
 
-### How does `Roll.py` generate its challenges?
+### How does `Client.py` generate its challenges?
 It takes the SHA512 sum of the date with nanosecond precision
 (`date +%Y%m%d%H%M%S%N`) to make them more difficult to predict.
 
-### How does `Roll.py` calculate how much entropy was added to the pool?
+### How does `Client.py` calculate how much entropy was added to the pool?
 To update the number of bits in the entropy pool
 (`/proc/sys/kernel/random/entropy_avail`), `Roll.py` must estimate how many
 bits of entropy are actually in the returned sample. Since this cannot be
@@ -65,10 +65,10 @@ You can reseed automatically once each day by adding the following to your
 crontab (`crontab -e`):
 
     #Set MM and HH to minute and hour of your choice.
-    MM HH * * * /path/to/D20/roll.sh
+    MM HH * * * /path/to/D20/D20/Client.sh
 
-The roll script waits for a random period of time at the start to avoid
-contention on the server, even if a large number of instances are set to roll
+The client script waits for a random period of time at the start to avoid
+contention on the server, even if a large number of instances are set to poll
 at the same time.
 
 ## API
@@ -86,7 +86,7 @@ This behavior is enabled with the `-s` (`--seed`) command line flag.
 
 ## Scripts
 
-### `Roll.py`
+### `D20/Client.py`
 Seeds your local entropy pool by individually seeding from a group of D20
 instances specified as arguments: `./roll.sh https://d20.example.com`. If no
 arguments are specified, https://www.agalmicventures.com:8443 is used by default.
