@@ -25,7 +25,7 @@
 
 ##### Settings #####
 
-readonly COMMAND=D20/__init__.py
+readonly COMMAND=D20/Server.py
 
 ##### Helpers #####
 
