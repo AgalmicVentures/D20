@@ -47,7 +47,7 @@ test_job:
   script:
     #Run on a different port since the CI server may serve entropy too
     - ./start.sh -p 17184
-    - ./Roll.py --strict http://localhost:17184
+    - D20/Client.py --strict http://localhost:17184
     - ./stop.sh
   only:
     - master
