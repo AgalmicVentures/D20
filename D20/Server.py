@@ -154,6 +154,8 @@ def main(argv=None):
 	:return: int
 	"""
 	parser = argparse.ArgumentParser(description='D20 Entropy Microservice')
+	parser.add_argument('-H', '--host', action='store', default='0.0.0.0',
+		help='TCP host to run on (default 0.0.0.0).')
 	parser.add_argument('-p', '--port', action='store', type=int, default=DEFAULT_PORT,
 		help='TCP port to run on.')
 	parser.add_argument('-e', '--entropy-size', action='store', type=int, default=DEFAULT_ENTROPY_SIZE,
@@ -171,7 +173,7 @@ def main(argv=None):
 	#TODO: productionize
 	print('Starting up D20...')
 	app.register_blueprint(api, url_prefix='/api')
-	app.run(port=arguments.port)
+	app.run(host=arguments.host, port=arguments.port)
 	print('Shutting down D20...')
 
 	return 0
