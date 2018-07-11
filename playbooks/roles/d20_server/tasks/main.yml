@@ -19,6 +19,17 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+- name: Allowing D20 connections through the firewall (ufw, port 27184)
+  ufw:
+    rule: allow
+    port: 27184
+  when: d20_server_firewall_allow | default(false)
+  tags:
+    - d20
+    - firewall
+    - network
+    - security
+
 - name: Creating account
   user:
     name: d20
