@@ -46,6 +46,9 @@ DEFAULT_RESEED_INTERVAL = 1024 * 1024
 #TODO: move this to another file
 #TODO: unit test
 class RandomBitGenerator(object):
+	"""
+	Represents a random bit generator, combining a deterministic random bit generator and an optional entropy source.
+	"""
 
 	def __init__(self, arguments):
 		self._reseedInterval = arguments.reseed_interval
