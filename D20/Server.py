@@ -71,7 +71,7 @@ class RandomBitGenerator(object):
 		iv = os.urandom(16)
 
 		self._cipher = Cipher(algorithms.AES(secret), modes.CTR(iv), backend=default_backend())
-		self._encryptor = self._cipher2.encryptor()
+		self._encryptor = self._cipher.encryptor()
 		self._n = 0
 
 	def entropy(self, **kwargs):
