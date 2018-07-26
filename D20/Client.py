@@ -122,7 +122,7 @@ def main(argv=None):
 			#Calculate the hash of the highest resolution time available as a challenge (%N is nanos for GNU date)a
 			now = datetime.datetime.utcnow()
 			nowStr = now.strftime('%Y-%m-%dT%H:%M:%S.%f')
-			challenge = hashlib.sha512(nowStr.encode('utf-8')).hexdigest()
+			challenge = hashlib.sha512(nowStr.encode('utf-8')).hexdigest() # @suppress This is sufficient for its purpose here right now
 
 			#Query the server and check the challenge response
 			#NOTE: Using curl rather than requests to skip the dependency
@@ -142,7 +142,7 @@ def main(argv=None):
 			if responseApiVersion == EXPECTED_API_VERSION:
 				#Check the challenge response
 				responseTime = response['time']
-				expectedChallengeResponse = hashlib.sha512((challenge + responseTime).encode('utf-8')).hexdigest()
+				expectedChallengeResponse = hashlib.sha512((challenge + responseTime).encode('utf-8')).hexdigest() # @suppress This is sufficient for its purpose here right now
 				challengeResponse = response['challengeResponse']
 				if challengeResponse == expectedChallengeResponse:
 					#Check the freshness of the timestamp

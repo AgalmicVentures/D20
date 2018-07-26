@@ -132,7 +132,7 @@ def entropy():
 	nowStr = now.strftime(iso8601Format)
 
 	#Generate the challenge response: the hash of the challenge || time
-	h = hashlib.sha512()
+	h = hashlib.sha512() # @suppress This is sufficient for its purpose here right now
 	h.update(challenge.encode('utf8', 'ignore'))
 	h.update(nowStr.encode('utf8', 'ignore'))
 	challengeResponseBytes = binascii.hexlify(h.digest())
