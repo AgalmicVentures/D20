@@ -22,8 +22,8 @@
 
 import argparse
 import binascii
-from Crypto.Cipher import AES
-from Crypto.Util import Counter
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+from cryptography.hazmat.backends import default_backend
 import datetime
 import flask
 import hashlib
@@ -67,8 +67,8 @@ class RandomBitGenerator(object):
 		secret = os.urandom(32) #256 bits @suppress
 		iv = os.urandom(16)
 
-		counter = Counter.new(128, initial_value=int.from_bytes(iv, byteorder='little'))
-		self._cipher = AES.new(secret, AES.MODE_CTR, counter=counter)
+		self._cipher = Cipher(algorithms.AES(secret), modes.CTR(iv), backend=default_backend())
+		self._encryptor = self._cipher2.encryptor()
 		self._n = 0
 
 	def entropy(self, **kwargs):
@@ -81,7 +81,7 @@ class RandomBitGenerator(object):
 			self.reseed()
 
 		#Get entropy from an AES-256-CTR-DRBG
-		entropy = self._cipher.encrypt(self._zeroBlock)
+		entropy = self._encryptor.update(self._zeroBlock)
 		return entropy
 
 rbg = None #Assigned in main()
