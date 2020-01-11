@@ -1,4 +1,3 @@
-#!/bin/bash
 
 # Copyright (c) 2015-2020 Agalmic Ventures LLC (www.agalmicventures.com)
 #
