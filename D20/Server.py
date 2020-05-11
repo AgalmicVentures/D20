@@ -32,6 +32,9 @@ import sys
 
 ##### Defaults #####
 
+#Also updated in Client.py
+API_VERSION = '1'
+
 #Default TCP port
 DEFAULT_PORT = 27184
 
@@ -41,7 +44,9 @@ DEFAULT_ENTROPY_SIZE = 16 * 32
 #How often to reseed the DRBG
 DEFAULT_RESEED_INTERVAL = 1024 * 1024
 
-##### Application #####
+##### Helpers #####
+
+ISO8601_FORMAT = '%Y-%m-%dT%H:%M:%S'
 
 #TODO: move this to another file
 #TODO: unit test
@@ -87,6 +92,8 @@ class RandomBitGenerator(object):
 		entropy = self._encryptor.update(self._zeroBlock)
 		return entropy
 
+##### Application #####
+
 rbg = None #Assigned in main()
 
 #Setup Flask application
@@ -128,8 +135,7 @@ def entropy():
 
 	#Get the time
 	now = datetime.datetime.utcnow()
-	iso8601Format = '%Y-%m-%dT%H:%M:%S'
-	nowStr = now.strftime(iso8601Format)
+	nowStr = now.strftime(ISO8601_FORMAT)
 
 	#Generate the challenge response: the hash of the challenge || time
 	h = hashlib.sha512() # @suppress This is sufficient for its purpose here right now
@@ -143,9 +149,25 @@ def entropy():
 	entropyValue = binascii.hexlify(entropy).decode('utf8')
 
 	return flask.jsonify({
-		'apiVersion': '1', #Also update in roll.sh
+		'apiVersion': API_VERSION,
 		'challengeResponse': challengeResponse,
 		'entropy': entropyValue,
+		'time': nowStr,
+	})
+
+@api.route('/status', methods=['GET', 'POST'])
+def status():
+	"""
+	API to return status to a client without getting entropy.
+	"""
+	#Get the time
+	now = datetime.datetime.utcnow()
+	iso8601Format = '%Y-%m-%dT%H:%M:%S'
+	nowStr = now.strftime(iso8601Format)
+
+	return flask.jsonify({
+		'apiVersion': API_VERSION,
+		'status': 'ok',
 		'time': nowStr,
 	})
 
@@ -169,7 +191,7 @@ def main(argv=None):
 		help='Seed the entropy pool with hashed data from requests.')
 	arguments = parser.parse_args(sys.argv[1:])
 
-	#Instantiate the rnadom bit generator
+	#Instantiate the random bit generator
 	global rbg
 	rbg = RandomBitGenerator(arguments)
 

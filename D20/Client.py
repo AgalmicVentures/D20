@@ -38,10 +38,15 @@ import sys
 import time
 import urllib.parse
 
-EXPECTED_API_VERSION = '1'
+##### Defaults #####
+
+#Also updated in Server.py
+API_VERSION = '1'
 
 START_WAIT_MAX = 15
 STEP_WAIT_MAX = 2
+
+##### Helpers #####
 
 ENTROPY_COUNT_FILE = '/proc/sys/kernel/random/entropy_avail'
 RNDADDENTROPY = 0x40085203
@@ -65,6 +70,8 @@ def getUrl(url):
 	if responseStr is None:
 		return None
 	return responseStr.decode('utf-8')
+
+##### Application #####
 
 def main(argv=None):
 	"""
@@ -139,7 +146,7 @@ def main(argv=None):
 
 			#Check the API version
 			responseApiVersion = response['apiVersion']
-			if responseApiVersion == EXPECTED_API_VERSION:
+			if responseApiVersion == API_VERSION:
 				#Check the challenge response
 				responseTime = response['time']
 				expectedChallengeResponse = hashlib.sha512((challenge + responseTime).encode('utf-8')).hexdigest() # @suppress This is sufficient for its purpose here right now
