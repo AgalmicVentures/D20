@@ -40,7 +40,7 @@ import urllib.parse
 
 ##### Defaults #####
 
-#Also updated in Server.py
+#Also updated in Server.py (not shared to avoid path issues)
 API_VERSION = '1'
 
 START_WAIT_MAX = 15

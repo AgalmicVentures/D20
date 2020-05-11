@@ -19,51 +19,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-#Cache the virtual environment
-cache:
-  paths:
-    - env/
+import unittest
 
-#Ensure the virtual environment is installed
-before_script:
-  - python3 -m venv env
-  - source env/bin/activate
-  - pip3 install -r requirements.txt
+from D20 import Client, Server
 
-stages:
-  - lint
-  - test
-  - stop
+class ServerTest(unittest.TestCase):
+	"""
+	Tests for functions in the D20 Server module.
+	"""
 
-shellcheck_lint_job:
-  stage: lint
-  script:
-    - shellcheck *.sh
-  only:
-    - master
-
-unit_test_job:
-  stage: unit_test
-  script:
-    - python3 -m unittest discover
-  only:
-    - master
-
-test_job:
-  stage: test
-  script:
-    #Run on a different port since the CI server may serve entropy too
-    - ./start.sh -p 17184
-    - D20/Client.py --strict http://localhost:17184
-    - ./stop.sh
-  only:
-    - master
-
-stop:
-  stage: stop
-  script:
-    - ./stop.sh
-  only:
-    - master
-  when: on_failure
-
+	def test_apiVersion(self):
+		self.assertTrue(Client.API_VERSION, Server.API_VERSION)

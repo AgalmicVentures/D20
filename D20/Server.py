@@ -32,7 +32,7 @@ import sys
 
 ##### Defaults #####
 
-#Also updated in Client.py
+#Also updated in Client.py (not shared to avoid path issues)
 API_VERSION = '1'
 
 #Default TCP port
@@ -48,8 +48,6 @@ DEFAULT_RESEED_INTERVAL = 1024 * 1024
 
 ISO8601_FORMAT = '%Y-%m-%dT%H:%M:%S'
 
-#TODO: move this to another file
-#TODO: unit test
 class RandomBitGenerator(object):
 	"""
 	Represents a random bit generator, combining a deterministic random bit generator and an optional entropy source.
