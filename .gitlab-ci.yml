@@ -32,7 +32,8 @@ before_script:
 
 stages:
   - lint
-  - test
+  - unit_test
+  - functional_test
   - stop
 
 shellcheck_lint_job:
@@ -49,8 +50,8 @@ unit_test_job:
   only:
     - master
 
-test_job:
-  stage: test
+functional_test_job:
+  stage: functional_test
   script:
     #Run on a different port since the CI server may serve entropy too
     - ./start.sh -p 17184
