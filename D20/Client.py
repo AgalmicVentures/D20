@@ -162,10 +162,11 @@ def main(argv=None):
 						#Check that not too much entropy is being put in the pool
 						if isLinux:
 							try:
-								entropyAvailable = int(open(ENTROPY_COUNT_FILE).read()[:-1])
-								if entropyAvailable >= arguments.max_entropy:
-									print('Available entropy %d over threshold, exiting' % entropyAvailable)
-									break
+								with open(ENTROPY_COUNT_FILE) as entropyCountFile:
+									entropyAvailable = int(entropyCountFile.read()[:-1])
+									if entropyAvailable >= arguments.max_entropy:
+										print('Available entropy %d over threshold, exiting' % entropyAvailable)
+										break
 							except (IOError, ValueError):
 								pass #Ignore this check if the file can't be read
 
