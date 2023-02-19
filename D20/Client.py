@@ -177,7 +177,7 @@ def main(argv=None):
 							entropyBits = entropyBytes * 8 // 64 #Divide by 64 to be conservative
 							entropyBitsConservative = min(entropyBits, 64) #Only allow 64 bits total
 							randPoolInfo = struct.pack("ii32s", entropyBitsConservative, len(entropy), entropy)
-							result = fcntl.ioctl(devRandom, RNDADDENTROPY, randPoolInfo)
+							fcntl.ioctl(devRandom, RNDADDENTROPY, randPoolInfo)
 						else:
 							devRandom.write(entropy)
 						print('Success.')
@@ -188,7 +188,7 @@ def main(argv=None):
 					print('Invalid challenge response (got %s, expected %s)' % (challengeResponse, expectedChallengeResponse))
 					failed = True
 			else:
-				print('Invalid API version (got %s, expected %s)' % (responseApiVersion, EXPECTED_API_VERSION))
+				print('Invalid API version (got %s, expected %s)' % (responseApiVersion, API_VERSION))
 				failed = True
 
 			randomSleep(STEP_WAIT_MAX)
